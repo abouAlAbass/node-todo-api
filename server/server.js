@@ -1,72 +1,33 @@
-var mongoose = require("mongoose");
+var express = require('express');
+var bodyParser =  require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/TodoApp");
+var{mongoose} = require('./db/mongoose');
+var {Todo} = require('./models/todo');
+var {User} = require('./models/user');
 
-//save new something
+var app = express();
 
-var Todo = mongoose.model("Todo", {
-  text: {
-    type: String,
-    required: true,
-    minlength: 1,
-    trim: true
-  },
-  completed: {
-    type: Boolean,
-    default: false
-  },
-  completedAt: {
-    type: Number,
-    default: null
-  }
+app.use(bodyParser.json());
+
+// store a new todo
+app.post('/todos',(req,res) => {
+  var todo = new Todo({
+    text: req.body.text
+  });
+  todo.save().then((doc) => {
+    res.send(doc);
+  }, (e) => {
+    res.status(400).send(e);
+  })
 });
 
-var newTodo = new Todo({
-  text: "cook lunch",
-  completed: false
-});
-var otherTodo = new Todo({
-  text: "  Some thing "
+app.listen(3000, () => {
+  console.log('====================================');
+  console.log('started on port 3000');
+  console.log('====================================');
 });
 
-/* newTodo.save().then((doc) => {
-console.log('====================================');
-console.log('Save new Todo',doc);
-console.log('====================================');
-}, (e) => {
-    consol.log('unable to save todo')
-});*/
-otherTodo.save().then(
-  doc => {
-    console.log("====================================");
-    console.log("Save other Todo", doc);
-    console.log("====================================");
-  },
-  e => {
-    consol.log("unable to save todo", e);
-  }
-);
 
-var User = mongoose.model("User", {
-  email: {
-    type: String,
-    required: true,
-    minlength: 5,
-    trim: true
-  }
-});
 
-var newUser = new User({ email: "admin@admin.com" });
-newUser.save().then(
-  doc => {
-    console.log("====================================");
-    console.log("new user", doc);
-    console.log("====================================");
-  },
-  e => {
-    console.log("====================================");
-    console.log("Error", e);
-    console.log("====================================");
-  }
-);
+
+
