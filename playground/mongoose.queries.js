@@ -45,4 +45,6 @@ User.findById(id).then((user) => {
     console.log('====================================');
     console.log('Todo by id',user);
     console.log('====================================');
+},(e) => {
+    console.log(e)
 });  
